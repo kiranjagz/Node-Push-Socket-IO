@@ -48,8 +48,11 @@
         <input type="submit" value="Send">
     </form>
 
-    <div>
-        <table id="tbplayers" class="centre">
+    <hr>
+    <hr>
+
+    <div class="center">
+        <table id="tbplayers" ">
             <thead>
                 <tr>
                     <th>
@@ -75,15 +78,19 @@
         </table>
     </div>
 </body>
+
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
     var socket = io.connect('http://localhost:3000');
 
+    var username = prompt('What\'s your username?');
+    socket.emit('little_newbie', username);
+
     socket.on('message', function(message) {
 	alert(message);})
 
-     socket.on('field', function (data) {
+    socket.on('field', function (data) {
             $('table > tbody').empty();
             var tr;
 			var obj = JSON.parse(data);
@@ -105,19 +112,15 @@
 			console.log(obj);
 			});
 
-    // socket.on('connect', function(data)
-    // {
-    //     socket.emit('join', 'Hello World from client');
-    // });
-    // socket.on('broad', function(data) {
-    //      $('#future').append(data+ "<br/>");
-    // });
+    socket.on('broad', function(data) {
+         $('#future').append(data+ "<br/>");
+    });
 
     $('form').submit(function(e){
      e.preventDefault();
      var message = $('#chat_input').val();
-     socket.emit('messages', message);
+     var messageWithUsername = username + " says: " + message;
+     socket.emit('messages', messageWithUsername);
  });
 </script>
-
 </html>

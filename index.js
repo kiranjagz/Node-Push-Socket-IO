@@ -2,9 +2,8 @@ var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app);
 var fs = require('fs');
  
-var mySocket = 0;
- 
-app.listen(3000); //Which port are we going to listen to?
+var mySocket = 0; 
+app.listen(3000); 
  
 function handler (req, res) {
   fs.readFile(__dirname + '/chat.html', //Load and display outputs to the index.html file
@@ -18,12 +17,25 @@ function handler (req, res) {
   });
 }
  
-io.sockets.on('connection', function (socket) {
-  console.log('Webpage connected'); //Confirmation that the socket has connection to the webpage
-  console.log(socket.id);
-  socket.emit('message', 'You are connected!');
+io.sockets.on('connection', function (socket, username) {
   mySocket = socket;
+  console.log('Web browser connected with Id: ' + mySocket.id); //Confirmation that the socket connected
+  socket.emit('message', 'You are connected!');
+  socket.broadcast.emit('message', 'Another client has just connected! ' + username);
+
+    // As soon as the username is received, it's stored as a session variable
+    socket.on('little_newbie', function(username) {
+        socket.username = username;
+        console.log(username);
+    });
+
+        socket.on('messages', function(data) {
+        console.log(data);
+        socket.emit('broad', data);
+        socket.broadcast.emit('broad',data);
+    });
 });
+
  
 //UDP server on 41181
 var dgram = require("dgram");
