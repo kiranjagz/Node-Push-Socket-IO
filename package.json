@@ -1,0 +1,21 @@
+{
+  "name": "node-push",
+  "version": "1.0.0",
+  "description": "A kind of real time using node",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "realtime"
+  ],
+  "author": "kiran",
+  "license": "ISC",
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "express": "^4.16.2",
+    "file-system": "^2.2.2",
+    "jquery": "^3.2.1",
+    "socket.io": "^2.0.4"
+  }
+}

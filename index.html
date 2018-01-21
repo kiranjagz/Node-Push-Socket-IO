@@ -1,0 +1,97 @@
+<html>
+
+<head>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<!--<script src="/materialize-css/dist/js/materialize.js"></script>-->
+	<!--<script src="/materialize-css/dist/css/materialize.css"></script>-->
+    
+    <style>
+#tb {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tbplayers td, #tbplayers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#tbplayers tr:nth-child(even){background-color: #f2f2f2;}
+
+#tbplayers tr:hover {background-color: #ddd;}
+
+#tbplayers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+	<script>
+		   var socket = io.connect('http://localhost:3000');
+		   socket.on('message', function(message) {
+		   alert('The server has a message for you: ' + message);})
+
+		   socket.on('field', function (data) {
+            $('table > tbody').empty();
+
+            var tr;
+			var obj = JSON.parse(data);
+			console.log(obj)
+
+            if (obj.length <= 0) {
+                 console.log("No data found");
+                }
+
+                for (var i = 0; i < obj.length; i++) {
+                    console.log(i);              
+                        
+					tr = $('<tr id="fileRow"/>').attr("data-id", obj[i]._id);
+                    tr.append("<td>" +  obj[i].Rank +  "</td>");
+                    tr.append("<td>" +  obj[i].Points + "</td>");
+                    tr.append("<td>" +  obj[i].Name + "</td>");
+                    tr.append("<td>" +  obj[i].Surname + "</td>");
+					tr.append("<td>" +  obj[i].Game + "</td>");
+					tr.append("<td>" +  obj[i].Brand + "</td>");
+                    $('table').append(tr);                  
+                    }
+			console.log(socket.id);
+			console.log(obj);
+			});
+		</script> 
+    </nav>
+
+	<div>
+					<table id="tbplayers">
+						<thead>
+							<tr>
+								<th>
+									Rank
+								</th>
+								<th>
+									Points
+								</th>
+								<th>
+									Name
+								</th>
+								<th>
+									Surname
+								</th>
+								<th>
+									Game Name
+								</th>
+								<th>
+									Brand
+								</th>
+							</tr>
+						</thead>
+					</table>
+	</div>
+</body>
+</html>

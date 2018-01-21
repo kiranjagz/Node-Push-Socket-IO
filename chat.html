@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <style>
+        #tb {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        #tbplayers td,
+        #tbplayers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        
+        #tbplayers tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        #tbplayers tr:hover {
+            background-color: #ddd;
+        }
+        
+        #tbplayers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Just Trying to make something work :)</h1>
+    <div id="future"></div>
+    <form id="form" id="chat_form">
+        <input id="chat_input" type="text">
+        <input type="submit" value="Send">
+    </form>
+
+    <div>
+        <table id="tbplayers">
+            <thead>
+                <tr>
+                    <th>
+                        Rank
+                    </th>
+                    <th>
+                        Points
+                    </th>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Surname
+                    </th>
+                    <th>
+                        Game Name
+                    </th>
+                    <th>
+                        Brand
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://localhost:3000');
+
+    socket.on('message', function(message) {
+	alert(message);})
+
+     socket.on('field', function (data) {
+            $('table > tbody').empty();
+            var tr;
+			var obj = JSON.parse(data);
+			console.log(obj)
+            if (obj.length <= 0) {
+                 console.log("No data found");
+                }
+                for (var i = 0; i < obj.length; i++) {                             
+					tr = $('<tr id="fileRow"/>').attr("data-id", obj[i].UserId);
+                    tr.append("<td>" +  obj[i].Rank +  "</td>");
+                    tr.append("<td>" +  obj[i].Points + "</td>");
+                    tr.append("<td>" +  obj[i].Name + "</td>");
+                    tr.append("<td>" +  obj[i].Surname + "</td>");
+					tr.append("<td>" +  obj[i].Game + "</td>");
+					tr.append("<td>" +  obj[i].Brand + "</td>");
+                    $('table').append(tr);                  
+                    }
+			console.log(socket.id);
+			console.log(obj);
+			});
+
+    // socket.on('connect', function(data)
+    // {
+    //     socket.emit('join', 'Hello World from client');
+    // });
+    // socket.on('broad', function(data) {
+    //      $('#future').append(data+ "<br/>");
+    // });
+
+    $('form').submit(function(e){
+     e.preventDefault();
+     var message = $('#chat_input').val();
+     socket.emit('messages', message);
+ });
+</script>
+
+</html>
