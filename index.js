@@ -6,7 +6,7 @@ var mySocket = 0;
 app.listen(3000); 
  
 function handler (req, res) {
-  fs.readFile(__dirname + '/chat.html', //Load and display outputs to the index.html file
+  fs.readFile(__dirname + '/index.html', //Load and display outputs to the index.html file
   function (err, data) {
     if (err) {
       res.writeHead(500);
@@ -17,16 +17,16 @@ function handler (req, res) {
   });
 }
  
-io.sockets.on('connection', function (socket, username) {
+io.sockets.on('connection', function (socket) {
   mySocket = socket;
   console.log('Web browser connected with Id: ' + mySocket.id); //Confirmation that the socket connected
   socket.emit('message', 'You are connected!');
-  socket.broadcast.emit('message', 'Another client has just connected! ' + username);
+  socket.broadcast.emit('message', 'Another client has just connected!');
 
     // As soon as the username is received, it's stored as a session variable
     socket.on('little_newbie', function(username) {
         socket.username = username;
-        console.log(username);
+        console.log('User joined: ' + username);
     });
 
         socket.on('messages', function(data) {

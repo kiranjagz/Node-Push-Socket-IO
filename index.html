@@ -1,81 +1,111 @@
 <html>
 
 <head>
-    <script src="/jquery/dist/jquery.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <!--<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 </head>
 
 <body>
-	<script>
-		   var socket = io.connect('http://localhost:3000');
-		   socket.on('message', function(message) {
-		   alert('The server has a message for you: ' + message);})
+	<nav class="light-pink lighten-1" role="navigation">
+		<div class="nav-wrapper container">
+			<a id="logo-container" href="#" class="brand-logo">Hello Socket :)</a>
+		</div>
+	</nav>
 
-		   socket.on('field', function (data) {
-            $('table > tbody').empty();
+	<div class="section no-pad-bot" id="index-banner">
+		<div class="container">
+			<div class="row">
+				<table id="tbplayers" class="table striped">
+					<thead>
+						<tr>
+							<th>
+								Rank
+							</th>
+							<th>
+								Points
+							</th>
+							<th>
+								Name
+							</th>
+							<th>
+								Surname
+							</th>
+							<th>
+								Game Name
+							</th>
+							<th>
+								Brand
+							</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+	</div>
 
-            var tr;
+	<hr>
+	<div id="future"></div>
+	<form id="form" id="chat_form">
+		<input id="chat_input" type="text" placeholder="Enter something">
+		<input type="submit" value="Send">
+	</form>
+</body>
+
+<script>
+		var socket = io.connect('http://localhost:3000');
+		var position = 0;
+		var username = prompt('What\'s your username?');
+		socket.emit('little_newbie', username);
+
+		socket.on('message', function (message) {
+			alert(message);
+		})
+
+		socket.on('field', function (data) {
+			$('table > tbody').empty();
+			var tr;
 			var obj = JSON.parse(data);
-			console.log(obj)
+			if (obj.length <= 0) {
+				console.log("No data found");
+			}
+			for (var i = 0; i < obj.length; i++) {
 
-            if (obj.length <= 0) {
-                 console.log("No data found");
-                }
+				if (username.toLowerCase() == obj[i].Name.toLowerCase()) {
+					console.log(obj[i].Name)
+					console.log(obj[i].Rank)
+					
+					Materialize.toast(obj[i].Name + ', you sir are position: ' + obj[i].Rank, 3000) // 4000 is the duration of the toast
+				}
 
-                for (var i = 0; i < obj.length; i++) {
-                    console.log(i);              
-                        
-					tr = $('<tr id="fileRow"/>').attr("data-id", obj[i]._id);
-                    tr.append("<td>" +  obj[i].Rank +  "</td>");
-                    tr.append("<td>" +  obj[i].Points + "</td>");
-                    tr.append("<td>" +  obj[i].Name + "</td>");
-                    tr.append("<td>" +  obj[i].Surname + "</td>");
-					tr.append("<td>" +  obj[i].Game + "</td>");
-					tr.append("<td>" +  obj[i].Brand + "</td>");
-                    $('table').append(tr);                  
-                    }
-
+				tr = $('<tr id="fileRow"/>').attr("data-id", obj[i].UserId);
+				tr.append("<td>" + obj[i].Rank + "</td>");
+				tr.append("<td>" + obj[i].Points + "</td>");
+				tr.append("<td>" + obj[i].Name + "</td>");
+				tr.append("<td>" + obj[i].Surname + "</td>");
+				tr.append("<td>" + obj[i].Game + "</td>");
+				tr.append("<td>" + obj[i].Brand + "</td>");
+				$('table').append(tr);
+			}
 			console.log(socket.id);
 			console.log(obj);
-			});
-		</script> 
+		});
 
-	<div class="container-fluid">
-		<section class="row">
-			<hr />
-			<div class="col-md-9 col-md-offset-*">
-				<div class="row">
-					<table id="tbplayers" class="table table-hover ">
-						<thead>
-							<tr>
-								<th>
-									Rank
-								</th>
-								<th>
-									Points
-								</th>
-								<th>
-									Name
-								</th>
-								<th>
-									Surname
-								</th>
-								<th>
-									Game Name
-								</th>
-								<th>
-									Brand
-								</th>
-							</tr>
-						</thead>
-					</table>
-				</div>
-			</div>
-		</section>
-	</div>
-</body>
+
+		socket.on('broad', function (data) {
+			$('#future').append(data + "<br/>");
+		});
+
+		$('form').submit(function (e) {
+			e.preventDefault();
+			var message = $('#chat_input').val();
+			$('#chat_input').val("");
+			var messageWithUsername = username + " says: " + message;
+			socket.emit('messages', messageWithUsername);
+		});
+	</script>
+
+
+
 </html>
