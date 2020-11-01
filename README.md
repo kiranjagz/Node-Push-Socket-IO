@@ -1,2 +1,2 @@
 # Node-Push-Socket-IO
-Push using socket io and node js
+Push service using SocketIO and Node.js used for real time processing with an UDP C# server connection. 
